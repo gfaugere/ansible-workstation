@@ -6,3 +6,6 @@ all:
     gaming:
       hosts:
         example_host:
+    cad:
+      hosts:
+        example_host:

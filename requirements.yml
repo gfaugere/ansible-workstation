@@ -1,2 +1,5 @@
 roles:
   - name: gantsign.visual-studio-code
+collections:
+  - name: community.general
+    source: https://galaxy.ansible.com

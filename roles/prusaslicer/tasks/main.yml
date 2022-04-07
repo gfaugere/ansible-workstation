@@ -1,0 +1,11 @@
+- name: Ensure flathub is present
+  community.general.flatpak_remote:
+    name: flathub
+    state: present
+    flatpakrepo_url: https://dl.flathub.org/repo/flathub.flatpakrepo
+    method: user
+
+- name: Install Prusa Slicer
+  community.general.flatpak:
+    name: com.prusa3d.PrusaSlicer
+    method: user
