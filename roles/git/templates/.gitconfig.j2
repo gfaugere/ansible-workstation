@@ -1,0 +1,26 @@
+[color]
+     ui = auto
+[user]
+     email = {{ git.email }}
+     name = {{ git.name }}
+     signingkey = {{ gpg_key_id.stdout }}
+
+[core]
+     quotepath = false
+     excludesfile = ~/.gitignore
+
+[push]
+     default = current
+[credential]
+     helper = cache --timeout=7200
+[rerere]
+     enabled = true
+[rebase]
+     autoSquash = true
+[fetch]
+     prune = true
+     pruneTags = true
+[commit]
+    gpgsign = true
+[init]
+    defaultBranch = main
