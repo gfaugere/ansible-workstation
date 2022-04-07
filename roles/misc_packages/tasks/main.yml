@@ -1,0 +1,11 @@
+- name: Install common packages
+  become: yes
+  package:
+    name:
+      - ripgrep
+      - bat
+      - htop
+      - tree
+      - ansible-lint
+      - bash-completion
+      - rpi-imager

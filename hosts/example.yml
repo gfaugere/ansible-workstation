@@ -1,0 +1,5 @@
+all:
+  children:
+    workstations:
+      hosts:
+        example_host:

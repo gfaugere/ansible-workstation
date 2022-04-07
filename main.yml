@@ -1,0 +1,4 @@
+- name: Configure workstation
+  hosts: workstations
+  roles:
+    - misc_packages
