@@ -1,0 +1,9 @@
+- name: Set full text location in nautilus
+  block:
+    - name: Read current conf
+      command: "dconf read /org/gnome/nautilus/preferences/always-use-location-entry"
+      register: always_use_location_entry
+      changed_when: false
+    - name: Set conf
+      command: "dconf write /org/gnome/nautilus/preferences/always-use-location-entry true"
+      changed_when: always_use_location_entry.stdout == "false"

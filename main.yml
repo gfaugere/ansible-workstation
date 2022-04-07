@@ -5,6 +5,7 @@
     - gnome
     - shell
     - git
+    - nautilus
     - role: gantsign.visual-studio-code
       users:
         - username: "{{ ansible_user_id }}"
