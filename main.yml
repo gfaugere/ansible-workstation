@@ -5,3 +5,9 @@
     - gnome
     - shell
     - git
+    - role: gantsign.visual-studio-code
+      users:
+        - username: "{{ ansible_user_id }}"
+          visual_studio_code_settings: {
+            "window.titleBarStyle": "custom"
+          }
