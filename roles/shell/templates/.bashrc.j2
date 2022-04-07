@@ -1,0 +1,189 @@
+# shellcheck shell=bash
+
+# Path
+export PATH="$HOME/.local/bin:$PATH"
+
+if [ -z "$PS1" ]; then
+	return
+fi
+
+GPG_TTY=$(tty)
+export GPG_TTY
+
+date=$(date)
+load=$(awk '{print $1}' < /proc/loadavg)
+root_usage=$(df -h / | awk '/\// {print $(NF-1)}')
+memory_usage=$(free -m | awk '/Mem/ { printf("%3.1f%%", $3/$2*100) }')
+swap_usage=$(free -m | awk '/Swap/ { printf("%3.1f%%", $3/$2*100) }')
+users=$(users | wc -w)
+
+machineColor="{{ machine_color }}"
+
+echo "System information as of: $date"
+echo
+printf "System load:\t%s\tMemory usage:\t%s\n" "$load" "$memory_usage"
+printf "Usage on /:\t%s\tSwap usage:\t%s\n" "$root_usage" "$swap_usage"
+printf "Local users:\t%s\n" "$users"
+if [ -f ~/.todo ] && [ "$(head -c1 ~/.todo | wc -c)" -ne 0 ]; then
+	echo
+	bat --language md --plain ~/.todo
+fi
+echo
+
+__git_ps1 ()
+{
+	local b
+	local bname
+	b="$(git symbolic-ref HEAD 2>/dev/null)"
+	bname="${b##refs/heads/}"
+	case $bname in
+		"master"|"main")
+			local bcolor="1;31"
+			;;
+		"develop")
+			local bcolor="36"
+			;;
+		*)
+			local bcolor="1;33"
+			;;
+	esac
+	if [ -n "$b" ]; then
+		printf " \001\e[""$bcolor""m\002(%s)\001\e[m\002" "$bname";
+	fi
+}
+
+all_colors ()
+{
+	echo -e "\033[1;30mGRAY"
+
+	echo -e "\033[0;31mRED"
+	echo -e "\033[1;31mLIGHT_RED"
+
+	echo -e "\033[0;32mGREEN"
+	echo -e "\033[1;32mLIGHT_GREEN"
+
+	echo -e "\033[0;33mYELLOW"
+	echo -e "\033[1;33mLIGHT_YELLOW"
+
+	echo -e "\033[0;34mBLUE"
+	echo -e "\033[1;34mLIGHT_BLUE"
+
+	echo -e "\033[0;35mPURPLE"
+	echo -e "\033[1;35mLIGHT_PURPLE"
+
+	echo -e "\033[0;36mCYAN"
+	echo -e "\033[1;36mLIGHT_CYAN"
+
+	echo -e "\033[0;37mLIGHT_GRAY"
+	echo -e "\033[1;37mWHITE"
+}
+
+PS1="\t \[\e[38;5;253m\]\u\[\e[38;5;245m\]@\[\e[""$machineColor""m\]\h\[\e[m\]:\[\e[00;36m\][\w]\[\e[38;5;245m\]\$(__git_ps1)\[\e[0m\]\[\e[00;37m\]\[\e[0m\]\$\[\e[m\] \[\e[0;37m\]"
+
+# You may uncomment the following lines if you want `ls' to be colorized:
+export LS_OPTIONS='--color=auto'
+
+# history control !
+export HISTCONTROL=ignoreboth:erasedups
+
+# append to the history file, don't overwrite it
+shopt -s histappend
+# check window size and updates lines/columns
+shopt -s checkwinsize
+
+# for setting history length see HISTSIZE and HISTFILESIZE in bash(1)
+HISTSIZE=1000
+HISTFILESIZE=2000
+
+# Some more alias to avoid making mistakes:
+alias rm='rm -i'
+alias cp='cp -i'
+alias mv='mv -i'
+
+# Some ls aliases
+alias ls='ls --color=auto'
+alias la='ls -ah'
+alias ll='ls -lah'
+alias l='ls'
+
+# Old cd shortcuts because why not
+alias cd..='cd ..'
+alias ..='cd ..'
+alias ...='cd ../../'
+alias ....='cd ../../../'
+alias .....='cd ../../../../'
+
+#Mkdir auto parents & verbose
+alias mkdir='mkdir -pv'
+
+#Human readable
+alias du='du -kh'
+alias df='df -kTh'
+
+#Reload bahsrc
+alias bashrc='. ~/.bashrc'
+
+#using ip with colors
+alias ip='ip -c'
+
+# Weather in terminal (useless but pretty)
+# Options described there: http://wttr.in/:help
+weather() {
+	curl "http://wttr.in/${1-}?F2q";
+}
+
+if [ -f ~/.lastweather ]; then
+    lastWeatherDaySourceDate="@$(stat -c %X ~/.lastweather)"
+else
+    lastWeatherDaySourceDate=$(date -d "yesterday" +'%Y-%m-%d')
+fi
+lastWeatherDay=$(date -d "$lastWeatherDaySourceDate" +'%Y-%m-%d')
+nowDay=$(date +'%Y-%m-%d')
+
+if [ "$lastWeatherDay" != "$nowDay" ]; then
+	weather ""
+	touch ~/.lastweather
+fi
+
+#Extracting function
+function extract {
+	if [ -z "$1" ]; then
+		# display usage if no parameters given
+		echo "Usage: extract <path/file_name>.<zip|rar|bz2|gz|tar|tbz2|tgz|Z|7z|xz|ex|tar.bz2|tar.gz|tar.xz>"
+	else
+		if [ -f "$1" ] ; then
+			# NAME=${1%.*}
+			# mkdir $NAME && cd $NAME
+			case $1 in
+				*.tar.bz2)   tar xvjf ./"$1"    ;;
+				*.tar.gz)    tar xvzf ./"$1"    ;;
+				*.tar.xz)    tar xvJf ./"$1"    ;;
+				*.lzma)      unlzma ./"$1"      ;;
+				*.bz2)       bunzip2 ./"$1"     ;;
+				*.rar)       unrar x -ad ./"$1" ;;
+				*.gz)        gunzip ./"$1"      ;;
+				*.tar)       tar xvf ./"$1"     ;;
+				*.tbz2)      tar xvjf ./"$1"    ;;
+				*.tgz)       tar xvzf ./"$1"    ;;
+				*.zip)       unzip ./"$1"       ;;
+				*.Z)         uncompress ./"$1"  ;;
+				*.7z)        7z x ./"$1"        ;;
+				*.xz)        unxz ./"$1"        ;;
+				*.exe)       cabextract ./"$1"  ;;
+				*)           echo "extract: '$1' - unknown archive method" ;;
+			esac
+		else
+			echo "$1 - file does not exist"
+		fi
+	fi
+}
+
+export EDITOR='vim'
+
+if [ -f /etc/profile.d/bash_completion.sh ]; then
+	source /etc/profile.d/bash_completion.sh
+fi
+
+{% if bashrc_additional_scripts is defined -%}
+	{{ bashrc_additional_scripts }}
+{% endif %}

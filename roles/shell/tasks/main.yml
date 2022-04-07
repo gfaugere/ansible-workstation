@@ -1,0 +1,11 @@
+- name: Create ssh key
+  ansible.builtin.user:
+    name: "{{ ansible_user_id }}"
+    generate_ssh_key: yes
+    ssh_key_type: "ed25519"
+
+- name: Applies .bashrc
+  ansible.builtin.template:
+    src: .bashrc.j2
+    dest: "/home/{{ ansible_user_id }}/.bashrc"
+    mode: 0644

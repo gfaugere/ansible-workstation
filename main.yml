@@ -3,3 +3,4 @@
   roles:
     - misc_packages
     - gnome
+    - shell
