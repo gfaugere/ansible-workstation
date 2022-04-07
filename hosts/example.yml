@@ -3,3 +3,6 @@ all:
     workstations:
       hosts:
         example_host:
+    gaming:
+      hosts:
+        example_host:

@@ -11,3 +11,8 @@
           visual_studio_code_settings: {
             "window.titleBarStyle": "custom"
           }
+- name: Configure for playings games
+  hosts: gaming
+  roles:
+    - steam
+    - goggalaxy

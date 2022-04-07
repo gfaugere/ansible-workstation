@@ -1,0 +1,4 @@
+- name: Install minigalaxy client for GOG
+  become: yes
+  package:
+    name: minigalaxy
