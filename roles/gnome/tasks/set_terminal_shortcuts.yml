@@ -1,0 +1,9 @@
+- name: Set terminal shortcuts
+  block:
+  - name: Check if binding is already correct
+    ansible.builtin.command: gsettings get org.gnome.Terminal.Legacy.Keybindings:/org/gnome/terminal/legacy/keybindings/ {{ item.key }}
+    register: current_bind
+    changed_when: false
+  - name: Set binding
+    ansible.builtin.command: gsettings set org.gnome.Terminal.Legacy.Keybindings:/org/gnome/terminal/legacy/keybindings/ {{ item.key }} {{ item.binding }}
+    changed_when: current_bind.stdout|quote is match(item.binding)

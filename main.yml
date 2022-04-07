@@ -2,3 +2,4 @@
   hosts: workstations
   roles:
     - misc_packages
+    - gnome

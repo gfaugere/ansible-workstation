@@ -1,0 +1,40 @@
+- name: Install packages related to gnome
+  become: yes
+  package:
+    name:
+      - gnome-tweaks
+
+- block:
+  - name: Check current theme
+    ansible.builtin.command: gsettings get org.gnome.desktop.interface gtk-theme
+    register: current_theme
+    changed_when: false
+  - name: Set dark mode
+    ansible.builtin.command: gsettings set org.gnome.desktop.interface gtk-theme 'Adwaita-dark'
+    changed_when: current_theme.stdout != "'Adwaita-dark'"
+
+- name: calling block with conditional on loop
+  include_tasks: set_terminal_shortcuts.yml
+  with_items:
+    - { key: 'next-tab', binding: '<Primary>Tab' }
+    - { key: 'prev-tab', binding: '<Primary><Shift>Tab' }
+    - { key: 'new-tab', binding: '<Primary>t' }
+    - { key: 'close-tab', binding: '<Primary>w' }
+
+- block:
+  - name: Check audible bell status
+    ansible.builtin.command: gsettings get org.gnome.desktop.wm.preferences audible-bell
+    register: audible_bell
+    changed_when: false
+  - name: Turn it off
+    ansible.builtin.command: gsettings set org.gnome.desktop.wm.preferences audible-bell false
+    changed_when: audible_bell.stdout != "false"
+
+- block:
+  - name: Check visual bell status
+    ansible.builtin.command: gsettings get org.gnome.desktop.wm.preferences visual-bell
+    register: visual_bell
+    changed_when: false
+  - name: Turn it off
+    ansible.builtin.command: gsettings set org.gnome.desktop.wm.preferences visual-bell false
+    changed_when: visual_bell.stdout != "false"
